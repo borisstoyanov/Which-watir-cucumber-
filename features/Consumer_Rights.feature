@@ -34,7 +34,7 @@ Feature: Consumer Rights feature
   |Distance Selling|
   |Payment Services|
 
-  Scenario Outline: Including a percentage in search returns error
+  Scenario Outline: Searching with special chars
     Given a user goes to consumer rights
     When they Search for <special_query>
     Then user should not brake the webpage
@@ -43,7 +43,7 @@ Feature: Consumer Rights feature
 
   Examples:
   |special_query|
-  |!|
+  |^|
   |@|
   |$|
   |%|

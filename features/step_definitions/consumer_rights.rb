@@ -1,3 +1,5 @@
+require 'rubygems'
+require 'watir'
 require 'watir-webdriver'
 require 'cucumber'
 
@@ -47,7 +49,7 @@ And(/^the first regulation should be (.*)$/) do |partial_query|
 end
 
 Then(/^user should not brake the webpage$/) do
-  @browser.section(:title, 'Search Consumer rights').exist?
+  @browser.text.should =~ /No results found for/
 end
 
 
