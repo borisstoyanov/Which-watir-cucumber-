@@ -2,62 +2,63 @@ require 'rubygems'
 require 'watir'
 require 'watir-webdriver'
 require 'cucumber'
+require './page_objects/page_objects'
 
 search_term = nil
 title = nil
+URL = 'http://www.which.co.uk/consumer-rights'
 
 Before do
-  @browser = Watir::Browser.new :ff
+  @site = Site.new(Watir::Browser.new)
 end
 
 After do
-  @browser.close
+  @site.close
 end
 
 Given(/^a user goes to consumer rights$/) do
-  @browser.goto 'http://www.which.co.uk/consumer-rights'
+  @consumer = @site.consumer_rights.goTo
 end
 
 When(/^they click on "([^"]*)"$/) do |arg|
   search_term = arg
-  @browser.link(:text => search_term).click()
+  @consumer.click_link(search_term)
 end
 
 Then(/^page title should be "([^"]*)"$/) do |arg|
   title = arg
-  @browser.title == title
+  @consumer.isAt(title)
 end
 
 Then(/^user should be displayed with search results$/) do
-  @browser.ul(:class => 'search-results').exist?
+  xpath = "//ul[@class='search-results']"
+  @consumer.element_present(xpath)
 end
 
 When(/^they Search for (.*)$/) do |search_query|
   search_term = search_query
-  @browser.text_field(:id =>'searchQuery').send_keys(search_term)
-  @browser.button(:id =>'searchSubmit').click
+  @consumer.search(search_query)
 end
 
 And(/^the first action should be emphasized (.*)$/) do |search_query|
-  search_term = search_query
-  @browser.em(:xpath, "//ul[@class='search-results']/li//em[text()='" + search_term + "']").exist?
+  element = "//ul[@class='search-results']/li//em[text()='" + search_query + "']"
+  @consumer.element_present(element)
 end
 
 And(/^the first regulation should be (.*)$/) do |partial_query|
-  search_term = partial_query
-  @browser.a(:xpath, "//li[@class='regulation']/h5//a[contains(text(),'" + search_term + "')]").exist?
+  element = "//li[@class='regulation']/h5//a[contains(text(),'" + partial_query + "')]"
+  @consumer.element_present(element)
 end
 
 Then(/^user should not brake the webpage$/) do
-  @browser.text.should =~ /No results found for/
+  @consumer.text_exist? 'No results found for'
 end
 
-
 When(/^they click on the latest entry in news$/) do
-  @browser.a(:xpath, "//article[@class='newsBlock block']//h4//a").click
+  @news = @consumer.click_on_latest_entry_in_news
 end
 
 Then(/^page title should be containing (.*)$/) do |arg|
-  title = arg
-  @browser.title.include? title
+  @news.isAt arg
 end
+
